@@ -11,7 +11,7 @@ pub fn purifier() {
 
     let fragment = Html::parse_fragment(html);
     for node in fragment.tree {
-        
+
     }
 }
 
