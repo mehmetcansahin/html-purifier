@@ -93,18 +93,29 @@ pub fn purifier() {
         ..Settings::default()
     };
 
-    let input = r#"<div><span><!-- 42 --></span></div>"#;
+    let input = r#"<div src="asd"><span style=""><!-- 42 --></span></div>"#;
 
     let html_element_handler = |el: &mut Element| {
-        if settings
+        let find_el = settings
             .default
             .allowed
             .iter()
-            .any(|x| x.name.eq(&el.tag_name()))
-        {
-            // attr check and remove
-        } else {
-            el.remove_and_keep_content();
+            .find(|x| x.name.eq(&el.tag_name()));
+        match find_el {
+            Some(finded_el) => {
+                let mut remove_attr = vec![];
+                for attr in el.attributes() {
+                    if finded_el.attribute.iter().any(|x| x.eq(&attr.name())) == false {
+                        remove_attr.push(attr.name());
+                    }
+                }
+                for attr in remove_attr {
+                    el.remove_attribute(&attr);
+                }
+            }
+            None => {
+                el.remove_and_keep_content();
+            }
         }
         Ok(())
     };
