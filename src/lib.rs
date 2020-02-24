@@ -1,112 +1,106 @@
-use lol_html::html_content::{Attribute, Element};
+use lol_html::html_content::Element;
 use lol_html::{element, rewrite_str, RewriteStrSettings};
 
 pub struct AllowedElement {
     pub name: String,
-    pub attribute: Vec<String>,
-}
-
-pub struct HTML {
-    pub allowed: Vec<AllowedElement>,
+    pub attributes: Vec<String>,
 }
 
 pub struct Settings {
-    pub default: HTML,
+    pub allowed: Vec<AllowedElement>,
 }
 
 impl Default for Settings {
     #[inline]
     fn default() -> Self {
         Settings {
-            default: HTML {
-                allowed: vec![
-                    AllowedElement {
-                        name: "div".to_string(),
-                        attribute: vec![],
-                    },
-                    AllowedElement {
-                        name: "b".to_string(),
-                        attribute: vec![],
-                    },
-                    AllowedElement {
-                        name: "strong".to_string(),
-                        attribute: vec![],
-                    },
-                    AllowedElement {
-                        name: "i".to_string(),
-                        attribute: vec![],
-                    },
-                    AllowedElement {
-                        name: "em".to_string(),
-                        attribute: vec![],
-                    },
-                    AllowedElement {
-                        name: "u".to_string(),
-                        attribute: vec![],
-                    },
-                    AllowedElement {
-                        name: "a[href|title]".to_string(),
-                        attribute: vec!["href".to_string(), "title".to_string()],
-                    },
-                    AllowedElement {
-                        name: "ul".to_string(),
-                        attribute: vec![],
-                    },
-                    AllowedElement {
-                        name: "ol".to_string(),
-                        attribute: vec![],
-                    },
-                    AllowedElement {
-                        name: "li".to_string(),
-                        attribute: vec![],
-                    },
-                    AllowedElement {
-                        name: "p".to_string(),
-                        attribute: vec!["style".to_string()],
-                    },
-                    AllowedElement {
-                        name: "br".to_string(),
-                        attribute: vec![],
-                    },
-                    AllowedElement {
-                        name: "span".to_string(),
-                        attribute: vec!["style".to_string()],
-                    },
-                    AllowedElement {
-                        name: "img".to_string(),
-                        attribute: vec![
-                            "width".to_string(),
-                            "height".to_string(),
-                            "alt".to_string(),
-                            "src".to_string(),
-                        ],
-                    },
-                ],
-            },
+            allowed: vec![
+                AllowedElement {
+                    name: "div".to_string(),
+                    attributes: vec![],
+                },
+                AllowedElement {
+                    name: "b".to_string(),
+                    attributes: vec![],
+                },
+                AllowedElement {
+                    name: "strong".to_string(),
+                    attributes: vec![],
+                },
+                AllowedElement {
+                    name: "i".to_string(),
+                    attributes: vec![],
+                },
+                AllowedElement {
+                    name: "em".to_string(),
+                    attributes: vec![],
+                },
+                AllowedElement {
+                    name: "u".to_string(),
+                    attributes: vec![],
+                },
+                AllowedElement {
+                    name: "a".to_string(),
+                    attributes: vec!["href".to_string(), "title".to_string()],
+                },
+                AllowedElement {
+                    name: "ul".to_string(),
+                    attributes: vec![],
+                },
+                AllowedElement {
+                    name: "ol".to_string(),
+                    attributes: vec![],
+                },
+                AllowedElement {
+                    name: "li".to_string(),
+                    attributes: vec![],
+                },
+                AllowedElement {
+                    name: "p".to_string(),
+                    attributes: vec!["style".to_string()],
+                },
+                AllowedElement {
+                    name: "br".to_string(),
+                    attributes: vec![],
+                },
+                AllowedElement {
+                    name: "span".to_string(),
+                    attributes: vec!["style".to_string()],
+                },
+                AllowedElement {
+                    name: "img".to_string(),
+                    attributes: vec![
+                        "width".to_string(),
+                        "height".to_string(),
+                        "alt".to_string(),
+                        "src".to_string(),
+                    ],
+                },
+            ],
         }
     }
 }
 
-// https://docs.rs/lol_html/0.1.0/lol_html/html_content/struct.Element.html#method.remove
-pub fn purifier() {
-    let settings = Settings {
-        ..Settings::default()
-    };
-
-    let input = r#"<div src="asd"><span style=""><!-- 42 --></span></div>"#;
-
-    let html_element_handler = |el: &mut Element| {
-        let find_el = settings
-            .default
-            .allowed
-            .iter()
-            .find(|x| x.name.eq(&el.tag_name()));
-        match find_el {
-            Some(finded_el) => {
+/// HTML Purifier
+///
+/// # Example
+///
+/// ```
+/// let settings = Settings {
+/// ..Settings::default()
+/// };
+/// let input = r#"<div style="display: block;"><span style="color: black;"><a href="/test" onclick="javascript:;"><img src="/logo.png" onerror="javascript:;"/>Rust</a></span></div>"#;
+/// let output = purifier(input, settings);
+/// ```
+pub fn purifier(input: &str, settings: Settings) -> String {
+    let element_handler = |el: &mut Element| {
+        let find = settings.allowed.iter().find(|e| e.name.eq(&el.tag_name()));
+        match find {
+            Some(find) => {
                 let remove_attributes = el
                     .attributes()
                     .iter()
-                    .filter(|e| finded_el.attribute.iter().any(|a| a.eq(&e.name())) == false)
+                    .filter(|e| find.attributes.iter().any(|a| a.eq(&e.name())) == false)
                     .map(|m| m.name())
                     .collect::<Vec<String>>();
                 for attr in remove_attributes {
@@ -119,27 +113,45 @@ pub fn purifier() {
         }
         Ok(())
     };
-
     let output = rewrite_str(
         input,
         RewriteStrSettings {
             element_content_handlers: vec![
-                element!("div", html_element_handler),
-                element!("span", html_element_handler),
+                element!("div", element_handler),
+                element!("b", element_handler),
+                element!("strong", element_handler),
+                element!("i", element_handler),
+                element!("em", element_handler),
+                element!("u", element_handler),
+                element!("a", element_handler),
+                element!("ul", element_handler),
+                element!("ol", element_handler),
+                element!("li", element_handler),
+                element!("p", element_handler),
+                element!("br", element_handler),
+                element!("span", element_handler),
+                element!("img", element_handler),
             ],
             ..RewriteStrSettings::default()
         },
     )
     .unwrap();
-    println!("{}", output);
+    return output;
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     #[test]
-    fn it_works() {
-        purifier();
-        assert_eq!(2 + 2, 4);
+    fn test_purifier() {
+        let settings = Settings {
+            ..Settings::default()
+        };
+        let input = r#"<div style="display: block;"><span style="color: black;"><a href="/test" onclick="javascript:;"><img src="/logo.png" onerror="javascript:;"/>Rust</a></span></div>"#;
+        let output = purifier(input, settings);
+        assert_eq!(
+            output,
+            r#"<div><span style="color: black;"><a href="/test"><img src="/logo.png" />Rust</a></span></div>"#
+        );
     }
 }
