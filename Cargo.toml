@@ -1,7 +1,12 @@
 [package]
 name = "html-purifier"
 version = "0.1.0"
-authors = ["mehmetcansahin <sahinmcan@gmail.com>"]
+description = "HTML Purifier"
+authors = ["MehmetCan ŞAHİN <sahinmcan@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/mehmetcansahin/html-purifier"
+keywords = ["html", "purifier"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
