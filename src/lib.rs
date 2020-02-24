@@ -103,6 +103,11 @@ pub fn purifier() {
             .find(|x| x.name.eq(&el.tag_name()));
         match find_el {
             Some(finded_el) => {
+                let attra = el
+                    .attributes()
+                    .iter()
+                    .filter(|e| finded_el.attribute.iter().any(|a| a.eq(&e.name())));
+                println!("{:?}", attra);
                 let mut remove_attr = vec![];
                 for attr in el.attributes() {
                     if finded_el.attribute.iter().any(|x| x.eq(&attr.name())) == false {
