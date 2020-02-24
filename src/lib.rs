@@ -86,10 +86,12 @@ impl Default for Settings {
 /// # Example
 ///
 /// ```
+/// use html_purifier::{purifier, Settings};
+/// 
 /// let settings = Settings {
-/// ..Settings::default()
+///     ..Settings::default()
 /// };
-/// let input = r#"<div style="display: block;"><span style="color: black;"><a href="/test" onclick="javascript:;"><img src="/logo.png" onerror="javascript:;"/>Rust</a></span></div>"#;
+/// let input = r#"<a href="/test" style="color: black;"><img src="/logo.png" onerror="javascript:;"/>Rust</a>"#;
 /// let output = purifier(input, settings);
 /// ```
 pub fn purifier(input: &str, settings: Settings) -> String {
