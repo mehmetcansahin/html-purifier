@@ -1,4 +1,4 @@
-use lol_html::html_content::Element;
+use lol_html::html_content::{Attribute, Element};
 use lol_html::{element, rewrite_str, RewriteStrSettings};
 
 pub struct AllowedElement {
@@ -103,18 +103,13 @@ pub fn purifier() {
             .find(|x| x.name.eq(&el.tag_name()));
         match find_el {
             Some(finded_el) => {
-                let attra = el
+                let remove_attributes = el
                     .attributes()
                     .iter()
-                    .filter(|e| finded_el.attribute.iter().any(|a| a.eq(&e.name())));
-                println!("{:?}", attra);
-                let mut remove_attr = vec![];
-                for attr in el.attributes() {
-                    if finded_el.attribute.iter().any(|x| x.eq(&attr.name())) == false {
-                        remove_attr.push(attr.name());
-                    }
-                }
-                for attr in remove_attr {
+                    .filter(|e| finded_el.attribute.iter().any(|a| a.eq(&e.name())) == false)
+                    .map(|m| m.name())
+                    .collect::<Vec<String>>();
+                for attr in remove_attributes {
                     el.remove_attribute(&attr);
                 }
             }
