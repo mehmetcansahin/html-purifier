@@ -87,7 +87,7 @@ impl Default for Settings {
 ///
 /// ```
 /// use html_purifier::{purifier, Settings};
-/// 
+///
 /// let settings = Settings {
 ///     ..Settings::default()
 /// };
@@ -118,22 +118,7 @@ pub fn purifier(input: &str, settings: Settings) -> String {
     let output = rewrite_str(
         input,
         RewriteStrSettings {
-            element_content_handlers: vec![
-                element!("div", element_handler),
-                element!("b", element_handler),
-                element!("strong", element_handler),
-                element!("i", element_handler),
-                element!("em", element_handler),
-                element!("u", element_handler),
-                element!("a", element_handler),
-                element!("ul", element_handler),
-                element!("ol", element_handler),
-                element!("li", element_handler),
-                element!("p", element_handler),
-                element!("br", element_handler),
-                element!("span", element_handler),
-                element!("img", element_handler),
-            ],
+            element_content_handlers: vec![element!("*", element_handler)],
             ..RewriteStrSettings::default()
         },
     )

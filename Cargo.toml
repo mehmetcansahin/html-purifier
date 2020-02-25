@@ -1,6 +1,6 @@
 [package]
 name = "html-purifier"
-version = "0.1.0"
+version = "0.1.1"
 description = "HTML Purifier"
 authors = ["MehmetCan ŞAHİN <sahinmcan@gmail.com>"]
 license = "MIT"
