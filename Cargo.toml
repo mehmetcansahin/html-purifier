@@ -5,6 +5,7 @@ description = "HTML Purifier"
 authors = ["MehmetCan ŞAHİN <sahinmcan@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+documentation = "https://docs.rs/html-purifier"
 repository = "https://github.com/mehmetcansahin/html-purifier"
 keywords = ["html", "purifier"]
 edition = "2018"
