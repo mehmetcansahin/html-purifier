@@ -1,5 +1,6 @@
 # HTML Purifier
 
+[![GHA Build Status](https://github.com/mehmetcansahin/html-purifier/workflows/Rust/badge.svg)](https://github.com/mehmetcansahin/html-purifier/actions?query=workflow%3ARusts)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![crates.io](https://img.shields.io/crates/v/html-purifier.svg)](https://crates.io/crates/html-purifier)
 [![Released API docs](https://docs.rs/html-purifier/badge.svg)](https://docs.rs/html-purifier)
