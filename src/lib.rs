@@ -1,5 +1,37 @@
-use lol_html::html_content::Element;
-use lol_html::{element, rewrite_str, RewriteStrSettings};
+//! # HTML Purifier
+//!
+//! HTML Purifier is a standard HTML filter library.
+//!
+//! > HTML Purifier will not only remove all malicious code (better known as XSS) with a thoroughly audited, secure yet permissive whitelist, it will also make sure your documents are standards compliant, something only achievable with a comprehensive knowledge of W3C's specifications. [HTML Purifier](http://htmlpurifier.org)
+//!
+//! ## Example
+//!
+//! ```
+//! use html_purifier::{purifier, Settings};
+//!
+//! let settings = Settings {
+//!     ..Settings::default()
+//! };
+//! let input = r#"<a href="/test" style="color: black;"><img src="/logo.png" onerror="javascript:;"/>Rust</a>"#;
+//! let output = purifier(input, settings);
+//! ```
+//!
+//! Input HTML
+//!
+//! ```notrust
+//! <a href="/test" style="color: black;"
+//!   ><img src="/logo.png" onerror="javascript:;" />Rust</a
+//! >
+//! ```
+//!
+//! Output HTML
+//!
+//! ```notrust
+//! <a href="/test"><img src="/logo.png" />Rust</a>
+//! ```
+
+use lol_html::html_content::{Comment, Element};
+use lol_html::{comments, element, rewrite_str, RewriteStrSettings};
 
 pub struct AllowedElement {
     pub name: String,
@@ -8,6 +40,7 @@ pub struct AllowedElement {
 
 pub struct Settings {
     pub allowed: Vec<AllowedElement>,
+    pub remove_comments: bool,
 }
 
 impl Default for Settings {
@@ -77,6 +110,7 @@ impl Default for Settings {
                     ],
                 },
             ],
+            remove_comments: true,
         }
     }
 }
@@ -115,10 +149,19 @@ pub fn purifier(input: &str, settings: Settings) -> String {
         }
         Ok(())
     };
+    let comment_handler = |c: &mut Comment| {
+        if settings.remove_comments {
+            c.remove();
+        }
+        Ok(())
+    };
     let output = rewrite_str(
         input,
         RewriteStrSettings {
-            element_content_handlers: vec![element!("*", element_handler)],
+            element_content_handlers: vec![
+                element!("*", element_handler),
+                comments!("*", comment_handler),
+            ],
             ..RewriteStrSettings::default()
         },
     )
@@ -139,6 +182,31 @@ mod tests {
         assert_eq!(
             output,
             r#"<div><span style="color: black;"><a href="/test"><img src="/logo.png" />Rust</a></span></div>"#
+        );
+    }
+    #[test]
+    fn test_purifier_remove_comments() {
+        let settings = Settings {
+            ..Settings::default()
+        };
+        let input = r#"<div style="display: block;"><!--Comment 1--><span style="color: black;"><a href="/test" onclick="javascript:;"><img src="/logo.png" onerror="javascript:;"/>Rust</a></span></div>"#;
+        let output = purifier(input, settings);
+        assert_eq!(
+            output,
+            r#"<div><span style="color: black;"><a href="/test"><img src="/logo.png" />Rust</a></span></div>"#
+        );
+    }
+    #[test]
+    fn test_purifier_show_comments() {
+        let settings = Settings {
+            remove_comments: false,
+            ..Settings::default()
+        };
+        let input = r#"<div style="display: block;"><span style="color: black;"><!--Comment 1--><a href="/test" onclick="javascript:;"><img src="/logo.png" onerror="javascript:;"/>Rust</a></span></div>"#;
+        let output = purifier(input, settings);
+        assert_eq!(
+            output,
+            r#"<div><span style="color: black;"><!--Comment 1--><a href="/test"><img src="/logo.png" />Rust</a></span></div>"#
         );
     }
 }

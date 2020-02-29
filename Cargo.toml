@@ -1,6 +1,6 @@
 [package]
 name = "html-purifier"
-version = "0.1.1"
+version = "0.2.0"
 description = "HTML Purifier"
 authors = ["MehmetCan ŞAHİN <sahinmcan@gmail.com>"]
 license = "MIT"
@@ -8,6 +8,7 @@ readme = "README.md"
 documentation = "https://docs.rs/html-purifier"
 repository = "https://github.com/mehmetcansahin/html-purifier"
 keywords = ["html", "purifier"]
+categories = ["web-programming"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
