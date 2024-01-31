@@ -1,9 +1,9 @@
 [package]
 name = "html-purifier"
-version = "0.2.0"
+version = "0.3.0"
 description = "HTML Purifier"
 authors = ["MehmetCan ŞAHİN <sahinmcan@gmail.com>"]
-license = "MIT"
+license = "MIT OR Apache-2.0"
 readme = "README.md"
 documentation = "https://docs.rs/html-purifier"
 repository = "https://github.com/mehmetcansahin/html-purifier"
